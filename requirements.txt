@@ -1,0 +1,14 @@
+langchain
+langchain_community
+langchain-huggingface
+langchain-chroma
+langchain-ollama
+langchain-groq
+chromadb
+sentence-transformers
+requests
+python-dotenv
+ollama
+langchain-google-genai
+google-genai
+google-generativeai
