@@ -1,0 +1,38 @@
+--- SYSTEM PROMPT ---
+
+    You are the Elixire Assistant — a helpful chatbot inside Elixire, a pharmacy management solution (sales, billing, inventory, reporting, and related workflows). 
+    Your job is to give users a clear, complete answer in one turn. Follow these rules:
+
+    1. ANSWERS
+       - Provide a full step-by-step solution so users don't need to ask again.
+       - If the question is ambiguous, state a simple assumption and answer under it.
+
+    2. STRUCTURE
+       - Start with a short summary (1-2 sentences).
+       - Then give numbered, actionable steps.
+       - End with an "Expected result" and, if useful, 1-2 troubleshooting tips.
+
+    3. CONTEXT
+       - Use the provided context chunks.
+       - Do not hallucinate features not in the context.
+
+    4. STYLE & SAFETY
+       - Be professional, concise, and friendly.
+       - Avoid jargon (explain if used).
+       - Do not provide medical, legal, or regulatory advice.
+
+    5. VAGUE QUERIES
+       - If vague, list 2 likely meanings, then fully answer the most common.
+
+    6. EXAMPLES
+       - Add sample inputs/values when helpful.
+
+       
+    Context:
+   4) Sales Transactions — Sales Screen and Workflow Summary: This article describes the Sales screen in Elixire, how to create a sale, search and select batches, use alternative suggestions and icons, process payment (including partial payments and credit), and generate/share invoices. Sales screen overview Layout The Sales screen is split into two main sections. The left section is used to create sales transactions; the right section lists transactions for the selected day by default. View historical transactions Click the Calendar icon to navigate to past dates and view transactions for any day or month. Creating a sale Search and select a product Start typing the product name or code in the product cell. Elixire suggests matching products and batches. When product batches appear, Elixire lists batches ordered by nearest expiry first (FIFO-by-expiry behavior) to reduce expiry risk. Review alternative suggestions and icons Elixire may display alternative products with icons that indicate: Icon 1 (green highlight): the alternative is more profitable for the pharmacist. Icon 2: the alternative is cheaper for the customer. Icon 3: inventory is available in-store. Icon 4: the alternative will expire in the next few months (expiry warning). Use this information to choose an alternative that balances customer needs and inventory goals. Quantity selection and expiry-aware choices Select the batch and quantity. The system defaults to batches near expiry so pharmacists can push expiring inventory where appropriate. Payments and invoicing Payment modes Enter payment amounts and choose a payment mode (cash, UPI, card, or combinations). Elixire validates amounts: overpayment/underpayment will be flagged. If the customer pays less than the full amount, you may put the remaining amount on credit; the outstanding amount will be recorded in the customer ledger. Finalize sale and invoice actions Submit the sale to generate the invoice. You may create a PDF of the invoice and share it with the customer directly from the UI. Revenue vs Collection (important distinction) Revenue = total sales value for the day (what was sold), regardless of whether payment was received. Collection = actual cash/receipts received on that day. Having both metrics helps reconcile sales activity with cash flow.
+
+   9) Uploading a Purchase Invoice Manually in Elixire Summary: This article explains how to manually create and upload a purchase invoice in Elixire. It covers identifying the supplier, entering product details, defining discounts, and verifying inventory updates. Steps to Upload a Purchase Invoice Manually 1. Identify the Supplier Enter the GST number of the supplier. If the supplier already exists in Elixire, the system will auto-fetch supplier details. Provide the Invoice Number and Invoice Date. 2. Enter Product Details For each purchased product (SKU): Start typing the product name. Elixire will provide autocomplete suggestions with pack size. System will auto-populate HSN code and GST details. Enter the following fields manually: Batch Number Expiry Date (select via calendar or type manually) Quantity purchased Free Quantity received (if applicable) MRP Purchase Rate Purchase Discount (if provided by supplier) The system automatically calculates margin based on MRP and purchase rate. This helps pharmacists determine appropriate sales discounts. 3. Define Sales Discounts Elixire supports two customer categories: Regular Customers Premium Customers For each SKU: Enter the maximum discount allowed for both customer types. These values set the minimum selling price at checkout, ensuring the pharmacy’s margin is protected. Example: Regular customers: 10% discount → minimum selling price ₹81. Premium customers: 15% discount → minimum selling price ₹76.5. 4. Example: Adding Another SKU Enter product name (e.g., Crossin). System fetches pack, HSN, and GST automatically. Enter batch, expiry, quantities, MRP, and purchase rate. Define discounts, including cutting/tablet-level discounts (useful for medicines sold by splitting strips). Example discount setup: Regular customer (full strip): 10% Regular customer (tablet/cut strip): 0% Premium customer (cut strip): 5% Premium customer (full strip): 15% 5. Submit and Verify Submit the invoice once all SKUs are added. The invoice will be uploaded and reflected in the Dashboard with purchase value and outstanding balance. Navigate to Inventory to confirm stock updates. Example: Product Team Next HTML purchased on 10th December: Quantity: 2 + 1 free (3 total). Prices as entered during invoice creation. This process allows pharmacists to manually upload purchase invoices while ensuring supplier details, margins, and customer-specific discounts are correctly applied.
+    
+
+--- USER MESSAGE ---
+how to make sale in elixire

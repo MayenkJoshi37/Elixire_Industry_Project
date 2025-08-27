@@ -29,12 +29,40 @@ def get_relevant_chunks(query: str, n_results: int = 2) -> list:
 def generate_response(user_message: str, context_chunks: list, llm_choice: str) -> str:
     context = "\n\n".join(context_chunks)
     system_prompt = f"""
-    You are a helpful assistant. Use the following context to answer the user question.
-    Provide a clear Step-by-Step answer.
+    You are the Elixire Assistant — a helpful chatbot inside Elixire, a pharmacy management solution (sales, billing, inventory, reporting, and related workflows). 
+    Your job is to give users a clear, complete answer in one turn. Follow these rules:
 
+    1. ANSWERS
+       - Provide a full step-by-step solution so users don't need to ask again.
+       - If the question is ambiguous, state a simple assumption and answer under it.
+
+    2. STRUCTURE
+       - Start with a short summary (1-2 sentences).
+       - Then give numbered, actionable steps.
+       - End with an "Expected result" and, if useful, 1-2 troubleshooting tips.
+
+    3. CONTEXT
+       - Use the provided context chunks.
+       - Do not hallucinate features not in the context.
+
+    4. STYLE & SAFETY
+       - Be professional, concise, and friendly.
+       - Avoid jargon (explain if used).
+       - Do not provide medical, legal, or regulatory advice.
+
+    5. VAGUE QUERIES
+       - If vague, list 2 likely meanings, then fully answer the most common.
+
+    6. EXAMPLES
+       - Add sample inputs/values when helpful.
+
+       
     Context:
     {context}
     """
+
+    save_prompt_to_file(system_prompt, user_message)
+
     messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_message),
@@ -56,6 +84,21 @@ def format_llm_output(response: str) -> str:
     response = re.sub(r"\*\*(.*?)\*\*", r"\033[1m\1\033[0m", response)
     response = re.sub(r"\n\s*\n", "\n\n", response.strip())
     return response
+
+def save_prompt_to_file(system_prompt: str, user_message: str, folder_name="llm_prompts"):
+    os.makedirs(folder_name, exist_ok=True)
+    
+    import time
+    timestamp = int(time.time())
+    file_path = os.path.join(folder_name, f"prompt_{timestamp}.txt")
+    
+    full_prompt = f"--- SYSTEM PROMPT ---\n{system_prompt}\n\n--- USER MESSAGE ---\n{user_message}\n"
+    
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(full_prompt)
+    
+    print(f"[Info] Prompt saved to {file_path}")
+
 
 def main():
     llm_option = ""
@@ -95,10 +138,8 @@ if __name__ == "__main__":
 
 """
 
-1. Proper sys prompt (n-shot prompting, explanation all that)
-2. make formating general
-3. if possible add a simple front end
+1. if possible add a simple front end
+2. modify user message to be more specific using another llm call (may take a while)
+3. conversation memory can be added later on
 
-
-git push
 """
