@@ -21,7 +21,7 @@ llm_local = ollama(model="deepseek-r1:8b")
 llm_groq = groq(model_name="openai/gpt-oss-120b", api_key=os.getenv("GROQ_API_KEY"))
 llm_gemini = gemini(model="gemini-2.5-pro")
 
-def get_relevant_chunks(query: str, n_results: int = 2) -> list:
+def get_relevant_chunks(query: str, n_results: int = 1) -> list:
     query_embedding = embedding_model.encode(query).tolist()
     results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
     return results['documents'][0] if results['documents'] else []
@@ -29,34 +29,28 @@ def get_relevant_chunks(query: str, n_results: int = 2) -> list:
 def generate_response(user_message: str, context_chunks: list, llm_choice: str) -> str:
     context = "\n\n".join(context_chunks)
     system_prompt = f"""
-    You are the Elixire Assistant — a helpful chatbot inside Elixire, a pharmacy management solution (sales, billing, inventory, reporting, and related workflows). 
-    Your job is to give users a clear, complete answer in one turn. Follow these rules:
+    You are the Elixire Assistant — a helpful chatbot inside Elixire, A pharmacy management solution.
+    Your job is to give users a simple, concise and clear answer.
+    Follow these rules for answering:
 
-    1. ANSWERS
-       - Provide a full step-by-step solution so users don't need to ask again.
-       - If the question is ambiguous, state a simple assumption and answer under it.
+    GOAL:
+    - Give clear, accurate, and concise answers for non-technical users.
+    - Entire response must be short and skimmable
 
-    2. STRUCTURE
-       - Start with a short summary (1-2 sentences).
-       - Then give numbered, actionable steps.
-       - End with an "Expected result" and, if useful, 1-2 troubleshooting tips.
+    STRUCTURE:
+    1. Provide numbered, actionable steps.
+    2. Add up to 1 troubleshooting tip only if critical.
 
-    3. CONTEXT
-       - Use the provided context chunks.
-       - Do not hallucinate features not in the context.
+    CONTEXT USE:
+    - Base your answer strictly on the provided context.
+    - If the query is ambiguous, state one simple assumption before answering.
+    - Never invent features or information not present in the context.
 
-    4. STYLE & SAFETY
-       - Be professional, concise, and friendly.
-       - Avoid jargon (explain if used).
-       - Do not provide medical, legal, or regulatory advice.
+    STYLE:
+    - Professional, friendly, plain language.
+    - Avoid jargon (or explain briefly if used).
+    - Never provide medical, legal, or regulatory advice.
 
-    5. VAGUE QUERIES
-       - If vague, list 2 likely meanings, then fully answer the most common.
-
-    6. EXAMPLES
-       - Add sample inputs/values when helpful.
-
-       
     Context:
     {context}
     """
@@ -132,14 +126,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-"""
-
-1. if possible add a simple front end
-2. modify user message to be more specific using another llm call (may take a while)
-3. conversation memory can be added later on
-
-"""
