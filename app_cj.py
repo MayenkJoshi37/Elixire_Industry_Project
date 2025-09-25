@@ -4,8 +4,8 @@ import chromadb
 from langchain_groq import ChatGroq as groq
 from langchain_ollama import OllamaLLM as ollama
 from sentence_transformers import SentenceTransformer
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain_google_genai import ChatGoogleGenerativeAI as gemini
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 MODEL_NAME = "BAAI/bge-large-en-v1.5"
 print(f"Loading embedding model: {MODEL_NAME}...")
@@ -21,9 +21,7 @@ llm_local = ollama(model="deepseek-r1:8b")
 llm_groq = groq(model_name="openai/gpt-oss-120b", api_key=os.getenv("GROQ_API_KEY"))
 llm_gemini = gemini(model="gemini-2.5-pro")
 
-# --- Conversation memory ---
 chat_history = []
-
 
 def get_relevant_chunks(query: str, n_results: int = 1) -> list:
     query_embedding = embedding_model.encode(query).tolist()

@@ -12,3 +12,7 @@ ollama
 langchain-google-genai
 google-genai
 google-generativeai
+transformers
+sentencepiece
+torch
+langdetect
