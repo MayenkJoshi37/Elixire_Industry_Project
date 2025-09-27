@@ -171,42 +171,42 @@ def postprocess_answer(answer_eng: str, target_lang: str) -> str:
         print(f"[Warning] Translation failed: {e}")
         return answer_eng
 
-def main():
-    print("\n[Info] Running in GROQ-only mode.")
-    print("Enter your message. Type 'quit' or 'exit' to end the chat.")
+# def main():
+#     print("\n[Info] Running in GROQ-only mode.")
+#     print("Enter your message. Type 'quit' or 'exit' to end the chat.")
 
-    while True:
-        user_message = input("\nYou: ")
-        if user_message.lower() in ["quit", "exit"]:
-            print("Goodbye!")
-            break
+#     while True:
+#         user_message = input("\nYou: ")
+#         if user_message.lower() in ["quit", "exit"]:
+#             print("Goodbye!")
+#             break
 
-        # Step 1: preprocess user query
-        print("[Step 1] Preprocessing user query...")
-        query_data = preprocess_user_query(user_message)
-        user_query_eng = query_data["user_query_eng"]
-        user_lang = query_data["user_original_query_lang"]
-        print(f"[Info] Refined/translated query: {user_query_eng}")
-        print(f"[Info] Original language: {user_lang}")
+#         # Step 1: preprocess user query
+#         print("[Step 1] Preprocessing user query...")
+#         query_data = preprocess_user_query(user_message)
+#         user_query_eng = query_data["user_query_eng"]
+#         user_lang = query_data["user_original_query_lang"]
+#         print(f"[Info] Refined/translated query: {user_query_eng}")
+#         print(f"[Info] Original language: {user_lang}")
 
-        # Step 2: retrieve context
-        print("[Step 2] Searching knowledge base for relevant context...")
-        relevant_chunks = get_relevant_chunks(user_query_eng)
-        print(f"[Info] Retrieved {len(relevant_chunks)} relevant chunk(s).")
+#         # Step 2: retrieve context
+#         print("[Step 2] Searching knowledge base for relevant context...")
+#         relevant_chunks = get_relevant_chunks(user_query_eng)
+#         print(f"[Info] Retrieved {len(relevant_chunks)} relevant chunk(s).")
 
-        # Step 3: generate English answer
-        print("[Step 3] Generating response from Groq...")
-        final_response_eng = generate_response(user_query_eng, relevant_chunks)
+#         # Step 3: generate English answer
+#         print("[Step 3] Generating response from Groq...")
+#         final_response_eng = generate_response(user_query_eng, relevant_chunks)
 
-        # Step 4: postprocess answer into original language (if needed)
-        print("[Step 4] Translating answer back (if required)...")
-        final_response = postprocess_answer(final_response_eng, user_lang)
+#         # Step 4: postprocess answer into original language (if needed)
+#         print("[Step 4] Translating answer back (if required)...")
+#         final_response = postprocess_answer(final_response_eng, user_lang)
 
-        formatted = format_llm_output(final_response)
-        print(f"\n--- GROQ's Response ---\n")
-        print(formatted)
-        print("\n--- End of response ---\n")
+#         formatted = format_llm_output(final_response)
+#         print(f"\n--- GROQ's Response ---\n")
+#         print(formatted)
+#         print("\n--- End of response ---\n")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

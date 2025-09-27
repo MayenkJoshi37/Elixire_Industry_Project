@@ -27,4 +27,4 @@
     
 
 --- USER MESSAGE ---
-How to make a sale in Elixir?
+How do I make a sale in Elixire?

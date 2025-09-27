@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elixire Assistant Chatbot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <div class="w-full max-w-5xl p-6 bg-white rounded-xl shadow-lg flex flex-col">
+    <h1 class="text-3xl font-bold mb-4 text-center text-blue-600">Elixire Assistant</h1>
+
+    <div id="chat-box" class="h-[600px] overflow-y-auto flex flex-col gap-3 p-4 bg-gray-50 rounded-lg font-sans text-lg text-gray-900">
+      <!-- Messages appear here -->
+    </div>
+
+    <form id="chat-form" class="flex mt-4">
+      <input id="user-input" type="text" placeholder="Type your message..." 
+             class="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"/>
+      <button type="submit" class="bg-blue-500 text-white px-6 rounded-r-lg hover:bg-blue-600 transition text-lg">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("user-input");
+    const chatBox = document.getElementById("chat-box");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage("You", message, true);
+      input.value = "";
+
+      appendTypingIndicator();
+
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+        const data = await response.json();
+        removeTypingIndicator();
+
+        if (data.response) {
+          appendMessage("Assistant", formatLLMOutput(data.response), false);
+        } else {
+          appendMessage("Assistant", "Error: No response from backend.", false);
+        }
+      } catch (err) {
+        removeTypingIndicator();
+        appendMessage("Assistant", "Error: Could not get response.", false);
+      }
+    });
+
+    function appendMessage(sender, text, isUser) {
+      const msg = document.createElement("div");
+      msg.className = `${isUser 
+        ? "self-end bg-blue-500 text-white text-lg font-medium" 
+        : "self-start bg-gray-200 text-gray-900 text-lg font-medium"} p-4 rounded-xl max-w-[80%] break-words shadow-sm`;
+      msg.innerHTML = `<strong>${sender}:</strong><br>${text}`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function appendTypingIndicator() {
+      const typing = document.createElement("div");
+      typing.id = "typing-indicator";
+      typing.className = "self-start p-4 rounded-xl max-w-[80%] bg-gray-200 text-gray-900 animate-pulse";
+      typing.textContent = "Assistant is typing...";
+      chatBox.appendChild(typing);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const typing = document.getElementById("typing-indicator");
+      if (typing) typing.remove();
+    }
+
+    function formatLLMOutput(text) {
+      // Remove ANSI codes
+      text = text.replace(/\x1b\[\d+m/g, "");
+
+      // Convert bold (**text**) to <strong>
+      text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+      const lines = text.split("\n");
+      const formattedLines = [];
+      let olOpen = false;
+
+      lines.forEach(line => {
+        const match = line.match(/^(\d+)\.\s+(.*)/);
+        if (match) {
+          if (!olOpen) {
+            formattedLines.push("<ol class='list-decimal list-inside mb-2 pl-5'>");
+            olOpen = true;
+          }
+          formattedLines.push(`<li>${match[2]}</li>`);
+        } else {
+          if (olOpen) {
+            formattedLines.push("</ol>");
+            olOpen = false;
+          }
+          // Keep tips italic
+          if (line.toLowerCase().startsWith("tip:") || line.toLowerCase().startsWith("*tip")) {
+            formattedLines.push(`<p class="italic text-gray-700 mt-2">${line}</p>`);
+          } else if(line.trim() !== "") {
+            formattedLines.push(`<p class="mt-1">${line}</p>`);
+          }
+        }
+      });
+
+      if (olOpen) formattedLines.push("</ol>");
+      return formattedLines.join("");
+    }
+  </script>
+</body>
+</html>
