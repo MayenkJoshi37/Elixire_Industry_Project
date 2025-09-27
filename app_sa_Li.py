@@ -5,8 +5,7 @@ import chromadb
 from sentence_transformers import SentenceTransformer
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext, load_index_from_storage
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from llama_index.vector_stores import ChromaVectorStore
-from llama_index.llms import ServiceContext
+from llama_index.vector_stores.chroma import ChromaVectorStore
 
 from langchain_groq import ChatGroq as groq
 from langchain_ollama import OllamaLLM as ollama
@@ -19,16 +18,14 @@ print(f"Loading embedding model: {MODEL_NAME} ...")
 hf_embed = HuggingFaceEmbedding(model_name=MODEL_NAME)
 print("Custom embedding model ready.")
 
-# --- Vector Store & LlamaIndex Setup ---
-PERSIST_DIR = "./llama_storage"
-CHROMA_PATH = "./chroma_db"
+PERSIST_DIR = "./chroma_db"               # same as your PersistentClient path
 COLLECTION_NAME = "elixire_docs_bge_large"
 
-# Wrap your existing ChromaDB collection for LlamaIndex
+# Wrap the existing Chroma collection for LlamaIndex
 vector_store = ChromaVectorStore(
-    chroma_collection_name=COLLECTION_NAME,
-    chroma_persist_directory=CHROMA_PATH,
-    embedding=hf_embed
+    persist_dir=PERSIST_DIR,              # embedded mode
+    collection_name=COLLECTION_NAME,      # your collection
+    embedding=hf_embed                     # your embedding function (BAAI/bge-large-en-v1.5)
 )
 
 storage_context = StorageContext.from_defaults(vector_store=vector_store)

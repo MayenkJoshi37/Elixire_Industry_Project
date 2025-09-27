@@ -22,9 +22,7 @@ def add_documents_to_db(text_chunks: list[str], source_id: str) -> None:
     print(f"Encoding {len(text_chunks)} text chunks...")
     embeddings = embedding_model.encode(text_chunks, show_progress_bar=True).tolist()
     print("Encoding complete.")
-
     ids = [f"{source_id}_{i}" for i in range(len(text_chunks))]
-
     collection.add(
         embeddings=embeddings,
         documents=text_chunks,

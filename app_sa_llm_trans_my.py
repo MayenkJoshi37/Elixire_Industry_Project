@@ -2,42 +2,30 @@ import os
 import re
 import json
 import chromadb
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq as groq
 from sentence_transformers import SentenceTransformer
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_groq import ChatGroq as groq
 
+load_dotenv()
 
-# ----------------------------
-# Load Embedding Model
-# ----------------------------
 MODEL_NAME = "BAAI/bge-large-en-v1.5"
 print(f"[Info] Loading embedding model: {MODEL_NAME}...")
 embedding_model = SentenceTransformer(MODEL_NAME)
 print("[Info] Embedding model loaded successfully.")
 
-# ----------------------------
-# Connect to ChromaDB
-# ----------------------------
 vector_db = chromadb.PersistentClient(path="./chroma_db")
 collection_name = "elixire_docs_bge_large"
 collection = vector_db.get_collection(name=collection_name)
 print(f"[Info] Connected to ChromaDB collection: {collection_name}")
 
-# ----------------------------
-# Initialize Groq LLM
-# ----------------------------
 llm_groq = groq(model_name="openai/gpt-oss-120b", api_key=os.getenv("GROQ_API_KEY"))
 
-
-# ----------------------------
-# Helper Functions
-# ----------------------------
 def get_relevant_chunks(query: str, n_results: int = 1) -> list:
     """Retrieve context chunks from ChromaDB using embeddings."""
     query_embedding = embedding_model.encode(query).tolist()
     results = collection.query(query_embeddings=[query_embedding], n_results=n_results)
     return results["documents"][0] if results["documents"] else []
-
 
 def generate_response(user_message: str, context_chunks: list) -> str:
     """Generate English response from Groq LLM given context."""
@@ -103,10 +91,6 @@ def save_prompt_to_file(system_prompt: str, user_message: str, folder_name="llm_
 
     print(f"[Info] Prompt saved to {file_path}")
 
-
-# ----------------------------
-# Pre- and Post-processing with Groq
-# ----------------------------
 def preprocess_user_query(user_message: str) -> dict:
     """
     Step 1: Use Groq to refine English query or translate non-English query into English.
@@ -187,10 +171,6 @@ def postprocess_answer(answer_eng: str, target_lang: str) -> str:
         print(f"[Warning] Translation failed: {e}")
         return answer_eng
 
-
-# ----------------------------
-# Main Chat Loop
-# ----------------------------
 def main():
     print("\n[Info] Running in GROQ-only mode.")
     print("Enter your message. Type 'quit' or 'exit' to end the chat.")
